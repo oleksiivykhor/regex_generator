@@ -1,0 +1,20 @@
+module RegexGenerator
+  class CharactersRecognizer
+    PATTERNS = [/[A-Z]/, /[a-z]/, /\d/, /\n/, /\s/, /./].freeze
+
+    def self.recognize(text)
+      result = []
+      text.chars.each do |char|
+        PATTERNS.each do |pattern|
+          next unless char[pattern]
+
+          escaped_char = Regexp.escape(char) unless char[/\s/]
+          res_char = escaped_char.eql?(char) ? pattern.source : escaped_char
+          break result << res_char
+        end
+      end
+
+      result
+    end
+  end
+end
