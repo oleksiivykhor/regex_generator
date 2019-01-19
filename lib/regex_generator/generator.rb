@@ -1,17 +1,31 @@
 module RegexGenerator
   class Generator
-    def initialize(target, text)
+    # rubocop:disable Metrics/LineLength
+    #
+    # @param target [String] what you want to find
+    # @param text [String] source text
+    # @param options [Hash] options to generate regex with
+    # @option options [true, false] :exact_target to generate regex with exact target value
+    #
+    # rubocop:enable Metrics/LineLength
+    def initialize(target, text, options = {})
       @text = text
       @target = target
+      @options = options
     end
 
+    # @return [Regexp]
     def generate
-      raise RegexGenerator::TargetNotFoundError unless cut_nearest_text
+      raise RegexGenerator::TargetNotFoundError unless @text[@target]
 
       string_patterns_array = slice_to_identicals(recognize(cut_nearest_text))
-      target_patterns_array = slice_to_identicals(recognize(@target))
       string_regex_str = join_patterns(string_patterns_array)
-      target_regex_str = join_patterns(target_patterns_array)
+      target_regex_str = if @options[:exact_target]
+        Regexp.escape @target
+      else
+        target_patterns_array = slice_to_identicals(recognize(@target))
+        join_patterns(target_patterns_array)
+      end
 
       Regexp.new("#{string_regex_str}(#{target_regex_str})")
     end

@@ -11,6 +11,10 @@ FactoryBot.define do
     argument { /\n\s+[A-Z][a-z]+\s[a-z]+.\s(\d+\.\d+)/ }
   end
 
+  factory :simple_regex_with_exact_target, class: Regexp do
+    argument { /\n\s+[A-Z][a-z]+\s[a-z]+.\s(25\.78)/ }
+  end
+
   factory :text_with_metacharacters, class: String do
     argument { '[Text], (with) {metacharacters}' }
   end
