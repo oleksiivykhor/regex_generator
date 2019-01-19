@@ -17,5 +17,12 @@ RSpec.describe RegexGenerator::CharactersRecognizer do
 
       it_behaves_like '.recognize'
     end
+
+    context 'when nil is given instead of string' do
+      let(:string) { nil }
+      let(:result) { [] }
+
+      it_behaves_like '.recognize'
+    end
   end
 end

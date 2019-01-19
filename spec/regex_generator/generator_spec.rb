@@ -9,7 +9,8 @@ RSpec.shared_examples '#generate' do
 end
 
 RSpec.describe RegexGenerator::Generator do
-  let(:generator) { described_class.new(target, text) }
+  let(:options) { {} }
+  let(:generator) { described_class.new(target, text, options) }
 
   describe '#generate' do
     let(:target) { build(:simple_target) }
@@ -39,6 +40,20 @@ RSpec.describe RegexGenerator::Generator do
       let(:target) { build(:target_for_multline_text) }
       let(:text) { build(:multline_text) }
       let(:regex) { build(:regex_for_multline_text) }
+
+      it_behaves_like '#generate'
+    end
+
+    context 'when options[:exact_target] is given' do
+      let(:options) { { exact_target: true } }
+      let(:regex) { build(:simple_regex_with_exact_target) }
+
+      it_behaves_like '#generate'
+    end
+
+    context 'when text is equal to target' do
+      let(:text) { target }
+      let(:regex) { /(\d+\.\d+)/ }
 
       it_behaves_like '#generate'
     end
