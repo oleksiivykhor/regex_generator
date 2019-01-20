@@ -11,6 +11,18 @@ FactoryBot.define do
     argument { /\n\s+[A-Z][a-z]+\s[a-z]+.\s(\d+\.\d+)/ }
   end
 
+  factory :simple_regex_with_self_recognition_chars, class: Regexp do
+    argument { /\n\s+[A-Z][a-z]+\s[a-z]+:\s(\d+\.\d+)/ }
+  end
+
+  factory :array_self_recognition_chars, class: Array do
+    argument { %w[# % _ & :] }
+  end
+
+  factory :string_self_recognition_chars, class: String do
+    argument { '#%_&:' }
+  end
+
   factory :simple_regex_with_exact_target, class: Regexp do
     argument { /\n\s+[A-Z][a-z]+\s[a-z]+.\s(25\.78)/ }
   end

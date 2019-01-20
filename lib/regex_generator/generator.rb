@@ -1,13 +1,12 @@
 module RegexGenerator
   class Generator
-    # rubocop:disable Metrics/LineLength
-    #
     # @param target [String] what you want to find
     # @param text [String] source text
     # @param options [Hash] options to generate regex with
-    # @option options [true, false] :exact_target to generate regex with exact target value
-    #
-    # rubocop:enable Metrics/LineLength
+    # @option options [true, false] :exact_target to generate regex
+    #   with exact target value
+    # @option options [String, Array] :self_recognition to recognize chars as
+    #   itself
     def initialize(target, text, options = {})
       @text = text
       @target = target
@@ -15,15 +14,17 @@ module RegexGenerator
     end
 
     # @return [Regexp]
+    # @raise [TargetNotFoundError] if target text was not found in the text
     def generate
       raise RegexGenerator::TargetNotFoundError unless @text[@target]
 
-      string_patterns_array = slice_to_identicals(recognize(cut_nearest_text))
+      string_regex_chars = recognize(cut_nearest_text, options)
+      string_patterns_array = slice_to_identicals(string_regex_chars)
       string_regex_str = join_patterns(string_patterns_array)
       target_regex_str = if @options[:exact_target]
         Regexp.escape @target
       else
-        target_patterns_array = slice_to_identicals(recognize(@target))
+        target_patterns_array = slice_to_identicals(recognize(@target, options))
         join_patterns(target_patterns_array)
       end
 
@@ -61,8 +62,19 @@ module RegexGenerator
       end.join
     end
 
-    def recognize(text)
-      RegexGenerator::CharactersRecognizer.recognize(text)
+    # Prepares options
+    def options
+      return @options unless @options.any?
+
+      if @options[:self_recognition].is_a? String
+        @options[:self_recognition] = @options[:self_recognition].chars
+      end
+
+      @options
+    end
+
+    def recognize(text, options)
+      RegexGenerator::CharactersRecognizer.recognize(text, options)
     end
   end
 end

@@ -5,8 +5,10 @@ module RegexGenerator
     # Creates array with regex representation for each char from the text
     #
     # @param text [String]
+    # @param options [Hash] options to recognize regex patterns with
+    # @option options [Array] :self_recognition to recognize chars as itself
     # @return [Array]
-    def self.recognize(text)
+    def self.recognize(text, options = {})
       return [] unless text
 
       result = []
@@ -16,7 +18,8 @@ module RegexGenerator
 
           escaped_char = Regexp.escape(char)
           res_pattern = escaped_char
-          res_pattern = pattern.source if char.eql?(escaped_char) || char[/\s/]
+          res_pattern = pattern.source if (char.eql?(escaped_char) &&
+            !options[:self_recognition]&.include?(escaped_char)) || char[/\s/]
           break result << res_pattern
         end
       end

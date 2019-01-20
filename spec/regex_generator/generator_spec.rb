@@ -57,5 +57,23 @@ RSpec.describe RegexGenerator::Generator do
 
       it_behaves_like '#generate'
     end
+
+    context 'when options[:self_recognition] is given as Array' do
+      let(:options) do
+        { self_recognition: build(:array_self_recognition_chars) }
+      end
+      let(:regex) { build(:simple_regex_with_self_recognition_chars) }
+
+      it_behaves_like '#generate'
+    end
+
+    context 'when options[:self_recognition] is given as String' do
+      let(:options) do
+        { self_recognition: build(:string_self_recognition_chars) }
+      end
+      let(:regex) { build(:simple_regex_with_self_recognition_chars) }
+
+      it_behaves_like '#generate'
+    end
   end
 end
