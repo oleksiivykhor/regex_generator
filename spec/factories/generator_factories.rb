@@ -43,6 +43,13 @@ FactoryBot.define do
     argument { 'unfound_target' }
   end
 
+  factory :unfound_targets_hash, class: Hash do
+    first_target { 'first_target' }
+    second_target { 'second_target' }
+
+    initialize_with { attributes }
+  end
+
   factory :multline_text, class: String do
     argument do
       %(Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque
@@ -67,6 +74,39 @@ FactoryBot.define do
     argument do
       '\n\s+[A-Z][a-z]+\s[a-z]+\s[a-z]+\s[a-z]+\.'\
         '\s([A-Z][a-z]+\s[a-z]+\s[a-z]+)'
+    end
+  end
+
+  factory :text_with_multiple_targets, class: String do
+    argument do
+      %(Nunc in velit arcu. Mauris bibendum viverra felis a viverra.
+        Aenean congue metus ut tortor mollis, ut dapibus tortor blandit.
+        Fusce nec sem est 125. Vivamus in turpis ut massa tincidunt 4,3 posuere.
+        Ut luctus congue purus quis ornare. Vestibulum nunc neque)
+    end
+  end
+
+  factory :targets_hash, class: Hash do
+    first_number { '125' }
+    turpis { 'turpis' }
+    second_number { '4,3' }
+
+    initialize_with { attributes }
+  end
+
+  factory :regex_with_named_groups, class: Regexp do
+    argument do
+      '\n\s+[A-Z][a-z]+\s[a-z]+\s[a-z]+\s[a-z]+\s(?<first_number>\d+)'\
+        '\.\s[A-Z][a-z]+\s[a-z]+\s(?<turpis>[a-z]+)\s[a-z]+\s[a-z]+\s[a-z]+'\
+        '\s(?<second_number>\d.\d)'
+    end
+  end
+
+  factory :regex_with_named_groups_and_exact_targets, class: Regexp do
+    argument do
+      '\n\s+[A-Z][a-z]+\s[a-z]+\s[a-z]+\s[a-z]+\s(?<first_number>125)'\
+        '\.\s[A-Z][a-z]+\s[a-z]+\s(?<turpis>turpis)\s[a-z]+\s[a-z]+\s[a-z]+'\
+        '\s(?<second_number>4,3)'
     end
   end
 

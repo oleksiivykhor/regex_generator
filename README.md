@@ -23,10 +23,11 @@ Or install it yourself as:
 ```ruby
 RegexGenerator.generate('45', 'some text 45')
 ```
+You can pass target as hash to generate regex with named capturing groups.
 
 You can use additional options to generate regex. For example:
 
-```
+```ruby
 RegexGenerator.generate('45', 'some text 45', exact_target: true)
 ```
 
@@ -40,7 +41,7 @@ Allowed options:
 - Create your feature branch (git checkout -b my-new-feature)
 - Commit your changes (git commit -am 'Add some feature')
 - Push to the branch (git push origin my-new-feature)
-- Create new Pull Reques
+- Create new Pull Request
 
 ## License
 

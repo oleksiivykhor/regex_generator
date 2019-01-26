@@ -4,7 +4,13 @@ RSpec.shared_examples '#generate' do
   end
 
   it 'checks that regex matches target' do
-    expect(text[regex, 1]).to eq target
+    if target.is_a? Hash
+      target.each do |key, value|
+        expect(text[regex, key]).to eq value
+      end
+    else
+      expect(text[regex, 1]).to eq target
+    end
   end
 end
 
@@ -29,6 +35,15 @@ RSpec.describe RegexGenerator::Generator do
 
     context 'when target was not found in text' do
       let(:target) { build(:unfound_target) }
+
+      it 'raises TargetNotFoundError' do
+        expect { generator.generate }.
+          to raise_error RegexGenerator::TargetNotFoundError
+      end
+    end
+
+    context 'when target is a Hash and it is not present in the text' do
+      let(:target) { build(:unfound_targets_hash) }
 
       it 'raises TargetNotFoundError' do
         expect { generator.generate }.
@@ -72,6 +87,24 @@ RSpec.describe RegexGenerator::Generator do
         { self_recognition: build(:string_self_recognition_chars) }
       end
       let(:regex) { build(:simple_regex_with_self_recognition_chars) }
+
+      it_behaves_like '#generate'
+    end
+
+    context 'when target is given as hash with named targets' do
+      let(:target) { build(:targets_hash) }
+      let(:text) { build(:text_with_multiple_targets) }
+      let(:regex) { build(:regex_with_named_groups) }
+
+      it_behaves_like '#generate'
+    end
+
+    context 'when target is given as hash with named targets '\
+      'and options[:exact_value] is given' do
+      let(:options) { { exact_target: true } }
+      let(:target) { build(:targets_hash) }
+      let(:text) { build(:text_with_multiple_targets) }
+      let(:regex) { build(:regex_with_named_groups_and_exact_targets) }
 
       it_behaves_like '#generate'
     end
