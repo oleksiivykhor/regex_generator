@@ -6,10 +6,10 @@ RSpec.shared_examples '#generate' do
   it 'checks that regex matches target' do
     if target.is_a? Hash
       target.each do |key, value|
-        expect(text[regex, key]).to eq value
+        expect(text[regex, key]).to eq value.to_s
       end
     else
-      expect(text[regex, 1]).to eq target
+      expect(text[regex, 1]).to eq target.to_s
     end
   end
 end
@@ -105,6 +105,19 @@ RSpec.describe RegexGenerator::Generator do
       let(:target) { build(:targets_hash) }
       let(:text) { build(:text_with_multiple_targets) }
       let(:regex) { build(:regex_with_named_groups_and_exact_targets) }
+
+      it_behaves_like '#generate'
+    end
+
+    context 'when target is given as non string' do
+      let(:target) { 25.78 }
+
+      it_behaves_like '#generate'
+    end
+
+    context 'when target is given as hash with non string arguments' do
+      let(:target) { build(:simple_hash_target) }
+      let(:regex) { build(:simple_regex_with_named_capturing_group) }
 
       it_behaves_like '#generate'
     end

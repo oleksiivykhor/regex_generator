@@ -1,6 +1,7 @@
 module RegexGenerator
   class Generator
-    # @param target [String, Hash] target string or hash with named targets
+    # @param target [String, Integer, Float, Hash] target string or hash with
+    #   named targets
     # @param text [String] source text
     # @param options [Hash] options to generate regex with
     # @option options [true, false] :exact_target to generate regex
@@ -9,7 +10,7 @@ module RegexGenerator
     #   itself
     def initialize(target, text, options = {})
       @text = text
-      @target = target
+      @target = target_to_s(target)
       @options = options
     end
 
@@ -75,6 +76,14 @@ module RegexGenerator
       end
 
       @options
+    end
+
+    def target_to_s(target)
+      return target.to_s unless target.is_a? Hash
+
+      target.each_with_object({}) do |(key, value), result|
+        result[key] = value.to_s
+      end
     end
 
     # Checks if target is present in the text

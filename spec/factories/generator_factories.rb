@@ -7,8 +7,18 @@ FactoryBot.define do
     argument { '25.78' }
   end
 
+  factory :simple_hash_target, class: Hash do
+    target { 25.78 }
+
+    initialize_with { attributes }
+  end
+
   factory :simple_regex, class: Regexp do
     argument { /\n\s+[A-Z][a-z]+\s[a-z]+.\s(\d+\.\d+)/ }
+  end
+
+  factory :simple_regex_with_named_capturing_group, class: Regexp do
+    argument { /\n\s+[A-Z][a-z]+\s[a-z]+.\s(?<target>\d+\.\d+)/ }
   end
 
   factory :simple_regex_with_self_recognition_chars, class: Regexp do
