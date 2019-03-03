@@ -20,6 +20,7 @@ module RegexGenerator
           res_pattern = escaped_char
           res_pattern = pattern.source if (char.eql?(escaped_char) &&
             !options[:self_recognition]&.include?(escaped_char)) || char[/\s/]
+
           break result << res_pattern
         end
       end

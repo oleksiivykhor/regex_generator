@@ -2,12 +2,13 @@ require 'regex_generator/version'
 require 'byebug'
 require 'regex_generator/generator'
 require 'regex_generator/characters_recognizer'
+require 'regex_generator/target'
 require 'regex_generator/exceptions'
 
 module RegexGenerator
   # Generates regex by text and target text
   #
-  # @param target [String] what you want to find
+  # @param target [String, Integer, Float, Hash] what you want to find
   # @param text [String] source text
   # @param options [Hash] options to generate regex with
   # @option options [true, false] :exact_target to generate regex

@@ -10,14 +10,15 @@ module RegexGenerator
     #   itself
     def initialize(target, text, options = {})
       @text = text
-      @target = target_to_s(target)
+      @target = RegexGenerator::Target.new(target)
+      @target_str = @target.to_s
       @options = options
     end
 
     # @return [Regexp]
     # @raise [TargetNotFoundError] if target text was not found in the text
     def generate
-      raise RegexGenerator::TargetNotFoundError unless target_present?
+      raise RegexGenerator::TargetNotFoundError unless @target.present?(@text)
 
       string_regex_chars = recognize_text(cut_nearest_text, options)
       string_patterns_array = slice_to_identicals(string_regex_chars)
@@ -31,17 +32,20 @@ module RegexGenerator
     # Cuts nearest to target, text from the start of the string
     def cut_nearest_text
       start_pattern = @text[/\n/] ? /\n/ : /^/
-      if @target.is_a? Hash
-        target_regex = /(?:#{escaped_target.join('|')})/
-        text_regex_str = (1..@target.count).map do |step|
+
+      if @target.kind_of? Hash
+        target_regex = /(?:#{@target.escape.join('|')})/
+        text_regex_str = (1..@target_str.count).map do |step|
           all = step.eql?(1) ? '.' : '[\w\W]'
           "#{all}+?#{target_regex}"
         end.join
         text_regex = Regexp.new "#{start_pattern}#{text_regex_str}"
-        @text[text_regex]
-      else
-        @text[/[\w\W]*(#{start_pattern}[\w\W]+?)#{Regexp.escape(@target)}/, 1]
+
+        return @text[text_regex]
       end
+
+      regex = /[\w\W]*(#{start_pattern}[\w\W]+?)#{Regexp.escape(@target_str)}/
+      @text[regex, 1]
     end
 
     # Slices array to subarrays with identical neighbor elements
@@ -71,45 +75,19 @@ module RegexGenerator
     def options
       return @options unless @options.any?
 
-      if @options[:self_recognition].is_a? String
+      if @options[:self_recognition].kind_of? String
         @options[:self_recognition] = @options[:self_recognition].chars
       end
 
       @options
     end
 
-    def target_to_s(target)
-      return target.to_s unless target.is_a? Hash
-
-      target.each_with_object({}) do |(key, value), result|
-        result[key] = value.to_s
-      end
-    end
-
-    # Checks if target is present in the text
-    def target_present?
-      return @target.values.all? { |t| @text[t] } if @target.is_a? Hash
-
-      !@text[@target].nil?
-    end
-
-    # If keys false, method returns array with escaped values, otherwise hash
-    # with escaped values (only if target is a hash)
-    def escaped_target(keys: false)
-      return Regexp.escape @target if @target.is_a? String
-      return @target.values.map { |v| Regexp.escape v } unless keys
-
-      @target.each_with_object({}) do |(key, value), result|
-        result[key] = Regexp.escape value
-      end
-    end
-
     # Recognizes target depending on type (String or Hash)
     def target_patterns
-      return escaped_target(keys: true) if @options[:exact_target]
+      return @target.escape(keys: true) if @options[:exact_target]
 
-      if @target.is_a? Hash
-        @target.each_with_object({}) do |(key, value), patterns|
+      if @target.kind_of? Hash
+        @target_str.each_with_object({}) do |(key, value), patterns|
           slices_patterns = slice_to_identicals(recognize(value))
           patterns[key] = join_patterns(slices_patterns)
         end
@@ -121,21 +99,21 @@ module RegexGenerator
 
     # Recognizes text depending on target type
     def recognize_text(text, options = {})
-      unless @target.is_a? Hash
+      unless @target.kind_of? Hash
         return recognize(text, options) << "(#{target_patterns})"
       end
 
-      target_regex = /#{escaped_target.join('|')}/
+      target_regex = /#{@target.escape.join('|')}/
       text.split(/(#{target_regex})/).map do |str|
         next recognize(str, options) unless str[target_regex]
 
-        key = @target.key(str)
+        key = @target_str.key(str)
         "(?<#{key}>#{target_patterns[key]})"
       end.flatten
     end
 
     def recognize(text, options = {})
-      RegexGenerator::CharactersRecognizer.recognize(text, options)
+      RegexGenerator::CharactersRecognizer.recognize(text.to_s, options)
     end
   end
 end
