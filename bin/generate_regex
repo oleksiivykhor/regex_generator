@@ -1,0 +1,36 @@
+#!/usr/bin/env ruby
+
+require 'regex_generator'
+require 'optparse'
+
+def text_content(args)
+  args.map do |arg|
+    File.exist?(arg) ? File.read(arg) : arg
+  end
+end
+
+params = {}
+
+OptionParser.new do |parser|
+  parser.banner = 'Usage: generate_regex "target or path/to/file" "text or path/to/file" [options]'
+
+  parser.on('--help', '-h', 'Displays this help message') do
+    puts parser
+    exit
+  end
+
+  parser.on('--self_recognition=CHARS', 'Recognizes chargs as itself') do |chars|
+    chars
+  end
+
+  parser.on('--exact_target', 'Generates regex with exact target value')
+end.parse!(into: params)
+
+unless ARGV.count.eql?(2)
+  error = ARGV.count < 2 ? 'target or text is missing' : "#{ARGV[2..-1].join(', ')}"
+
+  raise OptionParser::InvalidOption.new error
+end
+
+target, text = text_content(ARGV)
+puts RegexGenerator::Generator.new(target, text, params).generate

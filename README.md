@@ -31,6 +31,10 @@ You can use additional options to generate regex. For example:
 RegexGenerator.generate('45', 'some text 45', exact_target: true)
 ```
 
+Or use from command line:
+
+    $ generate_regex "target" "text or path/to/file" [options]
+
 Allowed options:
  - `:exact_target` - When it `true` regex will generated for exact target value
  - `:self_recognition` - Symbols that will be represented as itself. Can be string or array
