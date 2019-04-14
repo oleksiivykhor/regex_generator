@@ -129,5 +129,31 @@ RSpec.describe RegexGenerator::Generator do
 
       it_behaves_like '#generate'
     end
+
+    context 'when invalid options[:look] is given' do
+      let(:options) { { look: :invalid } }
+
+      it 'raises InvalidOption' do
+        expect { generator.generate }.
+          to raise_error RegexGenerator::InvalidOption
+      end
+    end
+
+    context 'when option look: :ahead and target is a string' do
+      let(:options) { { look: :ahead } }
+      let(:regex) { build(:simple_ahead_regex) }
+      let(:text) { build(:text_around_the_target) }
+
+      it_behaves_like '#generate'
+    end
+
+    context 'when option look: :ahead and target is a hash' do
+      let(:options) { { look: :ahead } }
+      let(:regex) { build(:ahead_regex_with_named_capturing_group) }
+      let(:text) { build(:text_around_the_target) }
+      let(:target) { build(:simple_hash_target) }
+
+      it_behaves_like '#generate'
+    end
   end
 end

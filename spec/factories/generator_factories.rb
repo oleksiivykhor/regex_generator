@@ -3,6 +3,18 @@ FactoryBot.define do
     argument { "The simple text\n  With number: 25.78" }
   end
 
+  factory :text_around_the_target, class: String do
+    argument { "The simple text\n  With number: 25.78 text {after}" }
+  end
+
+  factory :simple_ahead_regex, class: Regexp do
+    argument { /(\d+\.\d+)\s[a-z]+\s\{[a-z]+\}/ }
+  end
+
+  factory :ahead_regex_with_named_capturing_group, class: Regexp do
+    argument { /(?<target>\d+\.\d+)\s[a-z]+\s\{[a-z]+\}/ }
+  end
+
   factory :simple_target, class: String do
     argument { '25.78' }
   end

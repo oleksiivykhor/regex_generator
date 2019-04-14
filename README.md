@@ -38,6 +38,7 @@ Or use from command line:
 Allowed options:
  - `:exact_target` - When it `true` regex will generated for exact target value
  - `:self_recognition` - Symbols that will be represented as itself. Can be string or array
+ - `:look` - `:ahead` or `:behind` (`:behind` by default). To generate regex with text after or before the value
 
 ## Contributing
 

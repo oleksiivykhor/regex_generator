@@ -8,6 +8,8 @@ module RegexGenerator
     #   with exact target value
     # @option options [String, Array] :self_recognition to recognize chars as
     #   itself
+    # @option options [:ahead, :behind] :look to generate regex with text before
+    #   or after the target
     def initialize(target, text, options = {})
       @text = text
       @target = RegexGenerator::Target.new(target)
@@ -17,6 +19,7 @@ module RegexGenerator
 
     # @return [Regexp]
     # @raise [TargetNotFoundError] if target text was not found in the text
+    # @raise [InvalidOption] if :look option is not :ahead or :behind
     def generate
       raise RegexGenerator::TargetNotFoundError unless @target.present?(@text)
 
@@ -31,21 +34,24 @@ module RegexGenerator
 
     # Cuts nearest to target, text from the start of the string
     def cut_nearest_text
-      start_pattern = @text[/\n/] ? /\n/ : /^/
-
       if @target.kind_of? Hash
-        target_regex = /(?:#{@target.escape.join('|')})/
+        target_regex_str = "(?:#{@target.escape.join('|')})"
         text_regex_str = (1..@target_str.count).map do |step|
           all = step.eql?(1) ? '.' : '[\w\W]'
-          "#{all}+?#{target_regex}"
+          add_to("#{all}+?", target_regex_str)
         end.join
-        text_regex = Regexp.new "#{start_pattern}#{text_regex_str}"
 
-        return @text[text_regex]
+        return @text[Regexp.new(add_to('(?:\n|\A|\Z)', text_regex_str))]
       end
 
-      regex = /[\w\W]*(#{start_pattern}[\w\W]+?)#{Regexp.escape(@target_str)}/
-      @text[regex, 1]
+      @text[text_regex_for_string, 1]
+    end
+
+    def text_regex_for_string
+      {
+        behind: /[\w\W]*((?:\n|\A)[\w\W]+?)#{@target.escape}/,
+        ahead: /#{@target.escape}([\w\W]+?(?:\n|\Z))/
+      }[options[:look]]
     end
 
     # Slices array to subarrays with identical neighbor elements
@@ -73,10 +79,13 @@ module RegexGenerator
 
     # Prepares options
     def options
-      return @options unless @options.any?
-
       if @options[:self_recognition].kind_of? String
         @options[:self_recognition] = @options[:self_recognition].chars
+      end
+
+      @options[:look] = @options[:look] ? @options[:look].to_sym : :behind
+      unless %i[ahead behind].include? @options[:look]
+        raise RegexGenerator::InvalidOption, :look
       end
 
       @options
@@ -97,10 +106,21 @@ module RegexGenerator
       end
     end
 
+    # Adds target to source depending on source type and :look option, i.e. when
+    # :look is :behind it adds target to the start of the source, otherwise adds
+    # target to the end of the source
+    def add_to(source, target)
+      actions = { array: { behind: :push, ahead: :unshift },
+                  string: { behind: :concat, ahead: :prepend } }
+      action = actions[source.class.name.downcase.to_sym][options[:look]]
+
+      source.public_send(action, target)
+    end
+
     # Recognizes text depending on target type
     def recognize_text(text, options = {})
       unless @target.kind_of? Hash
-        return recognize(text, options) << "(#{target_patterns})"
+        return add_to(recognize(text, options), "(#{target_patterns})")
       end
 
       target_regex = /#{@target.escape.join('|')}/
