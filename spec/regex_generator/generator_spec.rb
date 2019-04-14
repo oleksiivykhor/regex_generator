@@ -121,5 +121,13 @@ RSpec.describe RegexGenerator::Generator do
 
       it_behaves_like '#generate'
     end
+
+    context 'when target contains :self_recognition chars' do
+      let(:options) { { self_recognition: %w[8 7 5 2] } }
+      let(:regex) { build(:simple_regex_with_exact_target) }
+      let(:target) { build(:simple_target) }
+
+      it_behaves_like '#generate'
+    end
   end
 end

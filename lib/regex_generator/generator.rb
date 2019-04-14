@@ -88,11 +88,11 @@ module RegexGenerator
 
       if @target.kind_of? Hash
         @target_str.each_with_object({}) do |(key, value), patterns|
-          slices_patterns = slice_to_identicals(recognize(value))
+          slices_patterns = slice_to_identicals(recognize(value, options))
           patterns[key] = join_patterns(slices_patterns)
         end
       else
-        target_patterns_array = slice_to_identicals(recognize(@target))
+        target_patterns_array = slice_to_identicals(recognize(@target, options))
         join_patterns(target_patterns_array)
       end
     end
