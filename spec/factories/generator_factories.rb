@@ -11,6 +11,10 @@ FactoryBot.define do
     argument { /(\d+\.\d+)\s[a-z]+\s\{[a-z]+\}/ }
   end
 
+  factory :simple_regex_with_strict_count, class: Regexp do
+    argument { /\n\s{2}[A-Z][a-z]{3}\s[a-z]{6}.\s(\d{2}\.\d{2})/ }
+  end
+
   factory :ahead_regex_with_named_capturing_group, class: Regexp do
     argument { /(?<target>\d+\.\d+)\s[a-z]+\s\{[a-z]+\}/ }
   end

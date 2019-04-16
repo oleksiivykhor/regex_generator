@@ -13,6 +13,10 @@ module RegexGenerator
   # @param options [Hash] options to generate regex with
   # @option options [true, false] :exact_target to generate regex
   #   with exact target value
+  # @option options [:ahead, :behind] :look to generate regex with text before
+  #   or after the target
+  # @option options [true, false] :strict_count to generate regex with a strict
+  #   chars count
   # @return [Regexp]
   #
   # @example Generate regex

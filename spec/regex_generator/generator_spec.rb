@@ -155,5 +155,12 @@ RSpec.describe RegexGenerator::Generator do
 
       it_behaves_like '#generate'
     end
+
+    context 'when options[:strict_count] is given' do
+      let(:options) { { strict_count: true } }
+      let(:regex) { build(:simple_regex_with_strict_count) }
+
+      it_behaves_like '#generate'
+    end
   end
 end

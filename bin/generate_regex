@@ -23,13 +23,14 @@ OptionParser.new do |parser|
     chars
   end
 
+  parser.on('--strict_count', 'Generates regex with a strcit chars count')
   parser.on('--exact_target', 'Generates regex with exact target value')
 end.parse!(into: params)
 
 unless ARGV.count.eql?(2)
   error = ARGV.count < 2 ? 'target or text is missing' : "#{ARGV[2..-1].join(', ')}"
 
-  raise OptionParser::InvalidOption.new error
+  raise OptionParser::InvalidOption, error
 end
 
 target, text = text_content(ARGV)

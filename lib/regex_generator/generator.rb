@@ -10,6 +10,8 @@ module RegexGenerator
     #   itself
     # @option options [:ahead, :behind] :look to generate regex with text before
     #   or after the target
+    # @option options [true, false] :strict_count to generate regex with a
+    #   strict chars count
     def initialize(target, text, options = {})
       @text = text
       @target = RegexGenerator::Target.new(target)
@@ -69,11 +71,12 @@ module RegexGenerator
       result
     end
 
-    # Joins patterns by count, i.e. returns pattern with '+' instead array
-    # with a multiple identical patterns
+    # Joins patterns by count, i.e. returns pattern with '+' (or chars count if
+    # :strict_count true) instead array with a multiple identical patterns
     def join_patterns(array)
       array.map do |patterns|
-        patterns.one? ? patterns.first : "#{patterns.first}+"
+        count = options[:strict_count] ? "{#{patterns.count}}" : '+'
+        patterns.one? ? patterns.first : "#{patterns.first}#{count}"
       end.join
     end
 
