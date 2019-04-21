@@ -162,5 +162,39 @@ RSpec.describe RegexGenerator::Generator do
 
       it_behaves_like '#generate'
     end
+
+    context 'when options[:title] is given and title '\
+      'was not found in the text' do
+      let(:options) { { title: 'invalid title' } }
+
+      it 'raises TitleNotFoundError' do
+        expect { generator.generate }.
+          to raise_error RegexGenerator::TitleNotFoundError
+      end
+    end
+
+    context 'when options[:title] is a string' do
+      let(:options) { { title: 'With number:' } }
+      let(:regex) { build(:simple_regex_with_title) }
+
+      it_behaves_like '#generate'
+    end
+
+    context 'when options[:title] is a hash with invalid keys' do
+      let(:options) { { title: { invalid: 'key' } } }
+
+      it 'raises InvalidOption' do
+        expect { generator.generate }.
+          to raise_error RegexGenerator::InvalidOption
+      end
+    end
+
+    context 'when options[:title] is a hash' do
+      let(:options) { { title: build(:simple_hash_title) } }
+      let(:target) { build(:simple_hash_target) }
+      let(:regex) { build(:simple_regex_with_hash_title) }
+
+      it_behaves_like '#generate'
+    end
   end
 end

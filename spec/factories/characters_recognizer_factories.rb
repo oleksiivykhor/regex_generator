@@ -38,5 +38,30 @@ FactoryBot.define do
     argument { %w[_ # % @] }
   end
 
+  factory :hash_title, class: RegexGenerator::Target do
+    argument { { first: 'first title', second: 'second title' } }
+  end
+
+  factory :chars_for_hash_title, class: Array do
+    argument do
+      ['[a-z]', '[a-z]', '[a-z]', '[a-z]', '\s', '\s', '\s', '\n', '\s',
+       '\s', 'first title', '\s', '\s', '\s', '[a-z]', '[a-z]', '[a-z]',
+       '[a-z]', '\s', '\s', '\n', '\s', '\s', '[a-z]', '[a-z]', '[a-z]',
+       '[a-z]', '\s', 'second title', '\n', '\s', '[a-z]', '[a-z]', '[a-z]',
+       '[a-z]']
+    end
+  end
+
+  factory :string_title, class: RegexGenerator::Target do
+    argument { 'some title' }
+  end
+
+  factory :chars_for_string_title, class: Array do
+    argument do
+      ['\n', '\s', '\s', '\s', '[a-z]', '[a-z]', '[a-z]', '[a-z]', '\s',
+       '\s', 'some title', '\s', '\s', '[a-z]', '[a-z]', '[a-z]', '[a-z]']
+    end
+  end
+
   initialize_with { new(argument) }
 end

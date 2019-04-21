@@ -17,6 +17,7 @@ module RegexGenerator
   #   or after the target
   # @option options [true, false] :strict_count to generate regex with a strict
   #   chars count
+  # @option options [String, Hash] :title to generate regex for provided title
   # @return [Regexp]
   #
   # @example Generate regex

@@ -40,6 +40,9 @@ Allowed options:
  - `:self_recognition` - Symbols that will be represented as itself. Can be string or array
  - `:look` - `:ahead` or `:behind` (`:behind` by default). To generate regex with text after or before the value
  - `:strict_count` - When it `true` regex will generated with strict chars count
+ - `:title` - Regex will generated for provided title. If `:title` is provided
+ as Hash (i.e. to generate regex with name capturing groups), `:title` must
+ contains the same keys as target
 
 ## Contributing
 

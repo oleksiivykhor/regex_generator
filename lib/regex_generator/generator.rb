@@ -12,18 +12,28 @@ module RegexGenerator
     #   or after the target
     # @option options [true, false] :strict_count to generate regex with a
     #   strict chars count
+    # @option options [String, Hash] :title to generate regex for provided title
     def initialize(target, text, options = {})
       @text = text
       @target = RegexGenerator::Target.new(target)
+      @title = RegexGenerator::Target.new(options[:title])
+      if options[:title] && !@title.keys_equal?(@target)
+        raise RegexGenerator::InvalidOption, :title
+      end
+
+      @title_str = @title.to_s
       @target_str = @target.to_s
       @options = options
     end
 
     # @return [Regexp]
     # @raise [TargetNotFoundError] if target text was not found in the text
-    # @raise [InvalidOption] if :look option is not :ahead or :behind
+    # @raise [InvalidOption] if :look option is not :ahead or :behind or :title
+    #   has different keys than target keys
+    # @raise [TitleNotFoundError] if :title was not found in the text
     def generate
       raise RegexGenerator::TargetNotFoundError unless @target.present?(@text)
+      raise RegexGenerator::TitleNotFoundError unless @title.present?(@text)
 
       string_regex_chars = recognize_text(cut_nearest_text, options)
       string_patterns_array = slice_to_identicals(string_regex_chars)
@@ -51,8 +61,8 @@ module RegexGenerator
 
     def text_regex_for_string
       {
-        behind: /[\w\W]*((?:\n|\A)[\w\W]+?)#{@target.escape}/,
-        ahead: /#{@target.escape}([\w\W]+?(?:\n|\Z))/
+        behind: /[\w\W]*((?:\n|\A)[\w\W]*?#{@title_str}\s*)#{@target.escape}/,
+        ahead: /#{@target.escape}([\w\W]*?#{@title_str}(?:\n|\Z))/
       }[options[:look]]
     end
 
@@ -82,6 +92,8 @@ module RegexGenerator
 
     # Prepares options
     def options
+      @options[:title] = @title
+
       if @options[:self_recognition].kind_of? String
         @options[:self_recognition] = @options[:self_recognition].chars
       end

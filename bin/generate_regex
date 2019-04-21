@@ -19,10 +19,8 @@ OptionParser.new do |parser|
     exit
   end
 
-  parser.on('--self_recognition=CHARS', 'Recognizes chargs as itself') do |chars|
-    chars
-  end
-
+  parser.on('--self_recognition=CHARS', 'Recognizes chargs as itself', &:chars)
+  parser.on('--title=TITLE', 'Generates regex for provided title', &:title)
   parser.on('--strict_count', 'Generates regex with a strcit chars count')
   parser.on('--exact_target', 'Generates regex with exact target value')
 end.parse!(into: params)

@@ -11,6 +11,10 @@ FactoryBot.define do
     argument { /(\d+\.\d+)\s[a-z]+\s\{[a-z]+\}/ }
   end
 
+  factory :simple_regex_with_title, class: Regexp do
+    argument { /\n\s+With number:\s(\d+\.\d+)/ }
+  end
+
   factory :simple_regex_with_strict_count, class: Regexp do
     argument { /\n\s{2}[A-Z][a-z]{3}\s[a-z]{6}.\s(\d{2}\.\d{2})/ }
   end
@@ -29,12 +33,22 @@ FactoryBot.define do
     initialize_with { attributes }
   end
 
+  factory :simple_hash_title, class: Hash do
+    target { 'With number:' }
+
+    initialize_with { attributes }
+  end
+
   factory :simple_regex, class: Regexp do
     argument { /\n\s+[A-Z][a-z]+\s[a-z]+.\s(\d+\.\d+)/ }
   end
 
   factory :simple_regex_with_named_capturing_group, class: Regexp do
     argument { /\n\s+[A-Z][a-z]+\s[a-z]+.\s(?<target>\d+\.\d+)/ }
+  end
+
+  factory :simple_regex_with_hash_title, class: Regexp do
+    argument { /\n\s+With number:\s(?<target>\d+\.\d+)/ }
   end
 
   factory :simple_regex_with_self_recognition_chars, class: Regexp do

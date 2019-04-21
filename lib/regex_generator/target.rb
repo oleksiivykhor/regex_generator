@@ -45,5 +45,15 @@ module RegexGenerator
         result[key] = Regexp.escape value
       end
     end
+
+    # Compares keys (for strings always true)
+    #
+    # @param other_target [Target]
+    # @ return [true, false]
+    def keys_equal?(other_target)
+      return false unless to_s.class.eql?(other_target.to_s.class)
+
+      kind_of?(Hash) ? to_s.keys.eql?(other_target.to_s.keys) : true
+    end
   end
 end

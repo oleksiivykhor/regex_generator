@@ -5,6 +5,12 @@ module RegexGenerator
     end
   end
 
+  class TitleNotFoundError < StandardError
+    def message
+      'The title was not found in the provided text'
+    end
+  end
+
   class InvalidOption < StandardError
     def initialize(*options)
       @options = options

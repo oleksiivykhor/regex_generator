@@ -93,4 +93,35 @@ RSpec.describe RegexGenerator::Target do
       it { expect(target_instance.escape(keys: true)).to eq hash_result }
     end
   end
+
+  describe '#keys_equal?' do
+    let(:target) { 'Some title' }
+    let(:second_target_instance) { described_class.new(second_target) }
+
+    context 'when both objects has a different type' do
+      let(:second_target) { build(:targets_hash) }
+
+      it { expect(target_instance).not_to be_keys_equal second_target_instance }
+    end
+
+    context 'when both objects are strings' do
+      let(:second_target) { 'second target' }
+
+      it { expect(target_instance).to be_keys_equal second_target_instance }
+    end
+
+    context 'when both objects are hashes with different keys' do
+      let(:target) { build(:simple_hash_target) }
+      let(:second_target) { build(:targets_hash) }
+
+      it { expect(target_instance).not_to be_keys_equal second_target_instance }
+    end
+
+    context 'when both objects are hashes with the same keys' do
+      let(:target) { build(:targets_hash) }
+      let(:second_target) { target }
+
+      it { expect(target_instance).to be_keys_equal second_target_instance }
+    end
+  end
 end
